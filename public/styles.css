@@ -362,11 +362,21 @@ header {
   gap: 0.5rem;
   text-transform: lowercase;
   color: var(--text-main);
+  transition: color 0.15s ease;
 }
 
 .logo .logo-icon {
   color: var(--accent-color);
   font-size: 1.5rem;
+  transition: color 0.15s ease;
+}
+
+.logo:hover {
+  color: var(--accent-color);
+}
+
+.logo:hover .logo-icon {
+  color: var(--accent-color);
 }
 
 nav {
@@ -390,7 +400,7 @@ nav {
 }
 
 .nav-btn:hover {
-  color: var(--text-main);
+  color: var(--accent-color);
   background: none;
 }
 
@@ -498,7 +508,7 @@ nav {
 }
 
 .control-btn:hover {
-  color: var(--text-main);
+  color: var(--accent-color);
 }
 
 .control-btn.active {

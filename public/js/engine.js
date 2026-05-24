@@ -178,7 +178,13 @@ export class TypingEngine {
     this.input.value = '';
     
     if (this.liveTimer) {
-      this.liveTimer.textContent = this.modeType === 'time' ? this.timeLeft : '00';
+      if (this.modeType === 'time') {
+        this.liveTimer.textContent = this.timeLeft;
+      } else if (this.modeType === 'words') {
+        this.liveTimer.textContent = `0/${this.modeVal}`;
+      } else {
+        this.liveTimer.textContent = '00';
+      }
     }
     if (this.liveWpm) {
       this.liveWpm.textContent = '0';
@@ -361,6 +367,9 @@ export class TypingEngine {
 
     // Check if word mode is finished early
     if (this.modeType === 'words' && this.currentWordIdx === this.words.length - 1 && typedVal === activeWord) {
+      if (this.liveTimer) {
+        this.liveTimer.textContent = `${this.words.length}/${this.words.length}`;
+      }
       this.completeTest();
     }
   }
@@ -396,6 +405,10 @@ export class TypingEngine {
       this.currentCharIdx = 0;
       this.input.value = '';
 
+      if (this.modeType === 'words' && this.liveTimer) {
+        this.liveTimer.textContent = `${this.currentWordIdx}/${this.words.length}`;
+      }
+
       // Check if finished (last word)
       if (this.currentWordIdx >= this.words.length) {
         this.completeTest();
@@ -409,6 +422,9 @@ export class TypingEngine {
       e.preventDefault();
       
       this.currentWordIdx--;
+      if (this.modeType === 'words' && this.liveTimer) {
+        this.liveTimer.textContent = `${this.currentWordIdx}/${this.words.length}`;
+      }
       const prevWordEl = this.wordsContainer.querySelector(`.word[data-word-idx="${this.currentWordIdx}"]`);
       prevWordEl.classList.remove('error-word');
 
@@ -448,12 +464,14 @@ export class TypingEngine {
         }
       } else {
         // Elapsed counter for other modes
-        if (this.liveTimer) {
-          this.liveTimer.textContent = this.timeElapsed;
+        if (this.modeType !== 'words') {
+          if (this.liveTimer) {
+            this.liveTimer.textContent = this.timeElapsed;
+          }
         }
         
-        // Dynamic refill words buffer in time/words mode
-        if (this.currentWordIdx > this.words.length - 10 && this.modeType !== 'code') {
+        // Dynamic refill words buffer ONLY in time mode
+        if (this.currentWordIdx > this.words.length - 10 && this.modeType === 'time') {
           this.bufferMoreWords();
         }
       }
