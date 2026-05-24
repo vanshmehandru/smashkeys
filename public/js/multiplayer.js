@@ -63,6 +63,12 @@ export function connectSocket(onEvent) {
             isHost = true;
             onEvent({ type: 'room_joined', roomId: message.roomId, players: message.players, text: message.text, isHost: true });
             break;
+
+          case 'room_joined':
+            currentRoomId = message.roomId;
+            isHost = false;
+            onEvent({ type: 'room_joined', roomId: message.roomId, players: message.players, text: message.text, isHost: false });
+            break;
             
           case 'player_joined':
             onEvent({ type: 'room_update', players: message.players, text: message.text, isHost: isHost });

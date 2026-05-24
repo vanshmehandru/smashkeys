@@ -616,10 +616,9 @@ function initMultiplayerEvents() {
     showMultiplayerSubView('welcome');
   });
 
-  // Return from results
+  // Return from results (Play Again)
   btnReturn.addEventListener('click', () => {
-    mpClient.disconnect();
-    showMultiplayerSubView('welcome');
+    showMultiplayerSubView('lobby');
   });
 }
 
@@ -744,33 +743,36 @@ function updateLobbyUI(players, isClientHost) {
 }
 
 function setupMpTypingEngine(sharedText) {
-  // Clear previous WS engine
-  if (mpEngine) {
+  // Only create the WS engine if it doesn't exist
+  if (!mpEngine) {
+    mpEngine = new TypingEngine({
+      wordsContainerId: 'mp-words-box',
+      caretId: 'mp-typing-caret',
+      inputId: 'mp-typing-input',
+      onComplete: (results) => {
+        mpClient.sendFinish(results.wpm, results.accuracy);
+      }
+    });
+
+    // Attach dynamic progress monitoring on input
+    mpEngine.input.addEventListener('input', () => {
+      const totalChars = sharedText.length;
+      // progress is defined as (typedChars / totalChars)
+      const progress = Math.min(1.0, mpEngine.correctChars / totalChars);
+      const stats = mpEngine.getCurrentStats();
+      mpClient.sendProgress(progress, stats.wpm, stats.accuracy);
+    });
+  } else {
     mpEngine.reset();
   }
 
-  mpEngine = new TypingEngine({
-    wordsContainerId: 'mp-words-box',
-    caretId: 'mp-typing-caret',
-    inputId: 'mp-typing-input',
-    onComplete: (results) => {
-      mpClient.sendFinish(results.wpm, results.accuracy);
-    }
-  });
-
   mpEngine.configure(state.settings);
+  mpEngine.modeType = 'custom';
   mpEngine.words = sharedText.split(' ');
   mpEngine.renderWords();
   mpEngine.updateCaret();
 
-  // Attach dynamic progress monitoring on input
-  mpEngine.input.addEventListener('input', () => {
-    const totalChars = sharedText.length;
-    // progress is defined as (typedChars / totalChars)
-    const progress = Math.min(1.0, mpEngine.correctChars / totalChars);
-    const stats = mpEngine.getCurrentStats();
-    mpClient.sendProgress(progress, stats.wpm, stats.accuracy);
-  });
+
 }
 
 // ----------------------------------------------------

@@ -470,6 +470,14 @@ wss.on('connection', (ws) => {
           room.status = 'countdown';
           room.text = generateMultiplayerWords(35); // Regen text on start
           
+          // Reset all players for the new race
+          room.players.forEach(p => {
+            p.wpm = 0;
+            p.accuracy = 100;
+            p.progress = 0;
+            p.finished = false;
+          });
+          
           let countdownVal = 5;
           broadcastToRoom(currentRoomId, { type: 'countdown', value: countdownVal, text: room.text });
 
