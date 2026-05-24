@@ -332,9 +332,15 @@ function generateRoomId() {
 }
 
 wss.on('connection', (ws) => {
+  console.log('[WebSocket Server] Client connection handshaked and established successfully!');
+  
   let currentRoomId = null;
   let clientUsername = null;
   let clientUserId = null;
+
+  ws.on('error', (err) => {
+    console.error('[WebSocket Server] Error on client socket:', err);
+  });
 
   // Send message helper
   const sendJSON = (obj) => {
