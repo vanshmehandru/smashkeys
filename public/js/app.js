@@ -117,6 +117,10 @@ function saveLocalSettings() {
 
 function applyTheme(themeId) {
   document.documentElement.setAttribute('data-theme', themeId);
+  const footerTheme = document.getElementById('footer-theme-name');
+  if (footerTheme) {
+    footerTheme.textContent = themeId;
+  }
 }
 
 // ----------------------------------------------------

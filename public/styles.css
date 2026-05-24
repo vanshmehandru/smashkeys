@@ -1604,3 +1604,41 @@ nav {
 .toast-banner.show {
   right: 2rem;
 }
+
+/* Footer Styles */
+.site-footer {
+  max-width: 1100px;
+  width: 90%;
+  margin: 2rem auto 1rem auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.footer-left, .footer-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.15s ease;
+}
+
+.footer-link:hover {
+  color: var(--accent-color);
+}
+
+.footer-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
