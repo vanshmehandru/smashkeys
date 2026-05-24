@@ -2,89 +2,128 @@
 let socket = null;
 let currentRoomId = null;
 let isHost = false;
+let keepAliveInterval = null;
 
 export function getSocketState() {
   return socket ? socket.readyState : null;
 }
 
+// Returns a Promise that resolves when the socket is open and ready
 export function connectSocket(onEvent) {
-  // Disconnect existing if any
-  if (socket) {
-    socket.close();
-  }
-
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const host = window.location.host;
-  socket = new WebSocket(`${protocol}//${host}/ws`);
-
-  socket.onopen = () => {
-    onEvent({ type: 'connected' });
-  };
-
-  socket.onmessage = (event) => {
-    try {
-      const message = JSON.parse(event.data);
-      
-      switch (message.type) {
-        case 'room_created':
-          currentRoomId = message.roomId;
-          isHost = true;
-          onEvent({ type: 'room_joined', roomId: message.roomId, players: message.players, text: message.text, isHost: true });
-          break;
-          
-        case 'player_joined':
-          onEvent({ type: 'room_update', players: message.players, text: message.text });
-          break;
-          
-        case 'player_left':
-          onEvent({ type: 'room_update', players: message.players, leftUser: message.leftUser });
-          break;
-          
-        case 'new_host':
-          if (message.hostName === localStorage.getItem('username')) {
-            isHost = true;
-          }
-          onEvent({ type: 'host_update', hostName: message.hostName, isHost });
-          break;
-
-        case 'countdown':
-          onEvent({ type: 'countdown', value: message.value, text: message.text });
-          break;
-
-        case 'race_start':
-          onEvent({ type: 'race_start' });
-          break;
-
-        case 'progress_update':
-          onEvent({ type: 'progress_update', players: message.players });
-          break;
-
-        case 'your_rank':
-          onEvent({ type: 'your_rank', rank: message.rank });
-          break;
-
-        case 'race_finished':
-          onEvent({ type: 'race_finished', results: message.results });
-          break;
-
-        case 'error':
-          onEvent({ type: 'error', message: message.message });
-          break;
-      }
-    } catch (err) {
-      console.error('Error parsing server message:', err);
+  return new Promise((resolve, reject) => {
+    // Disconnect existing if any
+    if (socket) {
+      try { socket.close(); } catch(e) { /* ignore */ }
+      socket = null;
     }
-  };
 
-  socket.onclose = () => {
-    onEvent({ type: 'disconnected' });
-    socket = null;
-  };
+    // Clear any existing keep-alive
+    if (keepAliveInterval) {
+      clearInterval(keepAliveInterval);
+      keepAliveInterval = null;
+    }
 
-  socket.onerror = (err) => {
-    console.error('Socket error:', err);
-    onEvent({ type: 'error', message: 'WebSocket connection failed.' });
-  };
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const ws = new WebSocket(`${protocol}//${host}/ws`);
+
+    // Timeout: if socket doesn't open within 8 seconds, give up
+    const connectTimeout = setTimeout(() => {
+      if (ws.readyState !== WebSocket.OPEN) {
+        ws.close();
+        reject(new Error('WebSocket connection timed out.'));
+      }
+    }, 8000);
+
+    ws.onopen = () => {
+      clearTimeout(connectTimeout);
+      socket = ws;
+
+      // Start keep-alive pings every 30 seconds to prevent Render proxy from dropping idle connections
+      keepAliveInterval = setInterval(() => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ type: 'ping' }));
+        }
+      }, 30000);
+
+      onEvent({ type: 'connected' });
+      resolve();
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+
+        // Ignore server pong responses
+        if (message.type === 'pong') return;
+        
+        switch (message.type) {
+          case 'room_created':
+            currentRoomId = message.roomId;
+            isHost = true;
+            onEvent({ type: 'room_joined', roomId: message.roomId, players: message.players, text: message.text, isHost: true });
+            break;
+            
+          case 'player_joined':
+            onEvent({ type: 'room_update', players: message.players, text: message.text });
+            break;
+            
+          case 'player_left':
+            onEvent({ type: 'room_update', players: message.players, leftUser: message.leftUser });
+            break;
+            
+          case 'new_host':
+            if (message.hostName === localStorage.getItem('username')) {
+              isHost = true;
+            }
+            onEvent({ type: 'host_update', hostName: message.hostName, isHost });
+            break;
+
+          case 'countdown':
+            onEvent({ type: 'countdown', value: message.value, text: message.text });
+            break;
+
+          case 'race_start':
+            onEvent({ type: 'race_start' });
+            break;
+
+          case 'progress_update':
+            onEvent({ type: 'progress_update', players: message.players });
+            break;
+
+          case 'your_rank':
+            onEvent({ type: 'your_rank', rank: message.rank });
+            break;
+
+          case 'race_finished':
+            onEvent({ type: 'race_finished', results: message.results });
+            break;
+
+          case 'error':
+            onEvent({ type: 'error', message: message.message });
+            break;
+        }
+      } catch (err) {
+        console.error('Error parsing server message:', err);
+      }
+    };
+
+    ws.onclose = () => {
+      clearTimeout(connectTimeout);
+      if (keepAliveInterval) {
+        clearInterval(keepAliveInterval);
+        keepAliveInterval = null;
+      }
+      socket = null;
+      onEvent({ type: 'disconnected' });
+    };
+
+    ws.onerror = (err) => {
+      clearTimeout(connectTimeout);
+      console.error('Socket error:', err);
+      // Don't call reject here — onclose will fire right after and handle cleanup
+    };
+  });
 }
 
 export function createRoom(username, userId) {
@@ -113,8 +152,12 @@ export function sendFinish(wpm, accuracy) {
 }
 
 export function disconnect() {
+  if (keepAliveInterval) {
+    clearInterval(keepAliveInterval);
+    keepAliveInterval = null;
+  }
   if (socket) {
-    socket.close();
+    try { socket.close(); } catch(e) { /* ignore */ }
     socket = null;
   }
   currentRoomId = null;

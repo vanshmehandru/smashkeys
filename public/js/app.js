@@ -575,18 +575,20 @@ function initMultiplayerEvents() {
   const btnReturn = document.getElementById('btn-mp-results-return');
 
   // Host Room
-  btnCreate.addEventListener('click', () => {
+  btnCreate.addEventListener('click', async () => {
     const name = state.currentUser ? state.currentUser.username : `Guest_${Math.floor(Math.random() * 900 + 100)}`;
     const uid = state.currentUser ? state.currentUser._id : null;
     
-    mpClient.connectSocket((evt) => handleMpEvents(evt, name));
-    setTimeout(() => {
+    try {
+      await mpClient.connectSocket((evt) => handleMpEvents(evt, name));
       mpClient.createRoom(name, uid);
-    }, 500);
+    } catch (err) {
+      showToast(err.message || 'Failed to connect to server.', true);
+    }
   });
 
   // Join Room
-  btnJoin.addEventListener('click', () => {
+  btnJoin.addEventListener('click', async () => {
     const code = document.getElementById('mp-room-code').value.trim();
     if (!code) {
       showToast('Please enter a valid room code.', true);
@@ -595,10 +597,12 @@ function initMultiplayerEvents() {
     const name = state.currentUser ? state.currentUser.username : `Guest_${Math.floor(Math.random() * 900 + 100)}`;
     const uid = state.currentUser ? state.currentUser._id : null;
 
-    mpClient.connectSocket((evt) => handleMpEvents(evt, name));
-    setTimeout(() => {
+    try {
+      await mpClient.connectSocket((evt) => handleMpEvents(evt, name));
       mpClient.joinRoom(code, name, uid);
-    }, 500);
+    } catch (err) {
+      showToast(err.message || 'Failed to connect to server.', true);
+    }
   });
 
   // Host Start Match

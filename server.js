@@ -366,6 +366,11 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(message);
       
       switch (data.type) {
+        case 'ping': {
+          sendJSON({ type: 'pong' });
+          break;
+        }
+
         case 'create_room': {
           const roomId = generateRoomId();
           clientUsername = data.username || 'Guest';
