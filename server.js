@@ -603,12 +603,29 @@ wss.on('connection', (ws) => {
 
 // Upgrade HTTP to WS
 server.on('upgrade', (request, socket, head) => {
-  const pathname = request.url ? request.url.split('?')[0] : '';
+  console.log(`[Upgrade Request] URL: ${request.url || ''}`);
+  
+  let pathname = '';
+  try {
+    if (request.url && (request.url.startsWith('http://') || request.url.startsWith('https://') || request.url.startsWith('ws://') || request.url.startsWith('wss://'))) {
+      pathname = new URL(request.url).pathname;
+    } else {
+      pathname = new URL(request.url || '', `http://${request.headers.host || 'localhost'}`).pathname;
+    }
+  } catch (e) {
+    console.error('[Upgrade Request] URL parsing error:', e.message);
+    pathname = request.url ? request.url.split('?')[0] : '';
+  }
+
+  console.log(`[Upgrade Request] Resolved Pathname: "${pathname}"`);
+
   if (pathname === '/ws' || pathname === '/ws/') {
+    console.log('[Upgrade Request] Path matches. Upgrading connection to WebSocket.');
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
     });
   } else {
+    console.warn(`[Upgrade Request] Path "${pathname}" did not match "/ws". Destroying socket.`);
     socket.destroy();
   }
 });
