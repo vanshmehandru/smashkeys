@@ -436,10 +436,26 @@ wss.on('connection', (ws) => {
             finished: p.finished
           }));
 
-          broadcastToRoom(roomId, {
+          // Notify the joining player
+          sendJSON({
+            type: 'room_joined',
+            roomId: roomId,
+            players: playerSummaries,
+            text: room.text,
+            isHost: false
+          });
+
+          // Notify everyone else in the room
+          const others = room.players.filter(p => p.ws !== ws);
+          const joinMsg = JSON.stringify({
             type: 'player_joined',
             players: playerSummaries,
             text: room.text
+          });
+          others.forEach(p => {
+            if (p.ws.readyState === WebSocket.OPEN) {
+              p.ws.send(joinMsg);
+            }
           });
           break;
         }

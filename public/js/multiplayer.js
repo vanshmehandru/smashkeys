@@ -65,11 +65,11 @@ export function connectSocket(onEvent) {
             break;
             
           case 'player_joined':
-            onEvent({ type: 'room_update', players: message.players, text: message.text });
+            onEvent({ type: 'room_update', players: message.players, text: message.text, isHost: isHost });
             break;
             
           case 'player_left':
-            onEvent({ type: 'room_update', players: message.players, leftUser: message.leftUser });
+            onEvent({ type: 'room_update', players: message.players, leftUser: message.leftUser, isHost: isHost });
             break;
             
           case 'new_host':
