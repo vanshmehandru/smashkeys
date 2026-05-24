@@ -365,9 +365,10 @@ export class TypingEngine {
     this.currentCharIdx = typedVal.length;
     this.updateCaret();
 
-    // Check if word mode is finished early
-    if (this.modeType === 'words' && this.currentWordIdx === this.words.length - 1 && typedVal === activeWord) {
-      if (this.liveTimer) {
+    // Check if test is finished early (last word completed in fixed-text modes)
+    const isFixedMode = this.modeType === 'words' || this.modeType === 'custom' || this.modeType === 'code';
+    if (isFixedMode && this.currentWordIdx === this.words.length - 1 && typedVal === activeWord) {
+      if (this.modeType === 'words' && this.liveTimer) {
         this.liveTimer.textContent = `${this.words.length}/${this.words.length}`;
       }
       this.completeTest();
@@ -574,20 +575,47 @@ export class TypingEngine {
     this.isRunning = false;
     this.input.blur();
 
-    const stats = this.getCurrentStats();
-    const duration = this.timeElapsed || 1;
+    const actualDuration = this.startTime ? (Date.now() - this.startTime) / 1000 : 1;
+    const duration = Math.max(actualDuration, 0.1);
+    
+    // Calculate final stats based on actual duration
+    const elapsedMins = duration / 60;
+    const finalWpm = Math.max(0, (this.correctChars / 5) / elapsedMins);
+    const finalRawWpm = Math.max(0, (this.totalTyped / 5) / elapsedMins);
+    const finalAccuracy = this.totalTyped > 0 ? (this.correctChars / this.totalTyped) * 100 : 100;
+
+    // Build/pad history for the graph
+    // Ensure we start at 0
+    if (this.history.length === 0 || this.history[0].time !== 0) {
+      this.history.unshift({
+        time: 0,
+        wpm: 0,
+        acc: 100
+      });
+    }
+
+    // Ensure we append the final stats at the exact completion time
+    const lastPoint = this.history[this.history.length - 1];
+    if (Math.abs(lastPoint.time - duration) > 0.1) {
+      this.history.push({
+        time: Math.round(duration * 10) / 10,
+        wpm: finalWpm,
+        acc: finalAccuracy
+      });
+    }
+
     const consistency = this.calculateConsistency();
     const weakKeys = this.calculateWeakKeys();
 
     const results = {
       modeType: this.modeType,
       modeVal: this.modeVal,
-      wpm: Math.round(stats.wpm * 10) / 10,
-      rawWpm: Math.round(stats.rawWpm * 10) / 10,
-      accuracy: Math.round(stats.accuracy * 10) / 10,
+      wpm: Math.round(finalWpm * 10) / 10,
+      rawWpm: Math.round(finalRawWpm * 10) / 10,
+      accuracy: Math.round(finalAccuracy * 10) / 10,
       errors: this.errorChars,
       consistency,
-      duration,
+      duration: Math.round(duration * 10) / 10,
       history: this.history,
       errorKeys: this.errorKeys,
       weakKeys

@@ -513,7 +513,7 @@ nav {
 
 .control-btn.active {
   color: var(--accent-color);
-  background: rgba(255, 0, 127, 0.08);
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
 }
 
 .divider {
