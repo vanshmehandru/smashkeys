@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
   streak: { type: Number, default: 0 },
   lastActive: { type: Date, default: Date.now },
   settings: {
-    theme: { type: String, default: 'cyberpunk' },
+    theme: { type: String, default: 'nord' },
     caret: { type: String, default: 'line' },
     fontSize: { type: String, default: '1.25rem' },
     soundType: { type: String, default: 'mechanical' },
@@ -61,6 +61,25 @@ const MatchSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 const Session = mongoose.model('Session', SessionSchema);
 const Match = mongoose.model('Match', MatchSchema);
+
+// Migrate users who are on the old default settings to the new default theme (nord)
+User.updateMany(
+  {
+    "settings.theme": "cyberpunk",
+    "settings.caret": "line",
+    "settings.fontSize": "1.25rem",
+    "settings.soundType": "mechanical",
+    "settings.soundVolume": 0.5,
+    "settings.layout": "qwerty"
+  },
+  {
+    $set: { "settings.theme": "nord" }
+  }
+).then(res => {
+  if (res.modifiedCount > 0) {
+    console.log(`Migrated ${res.modifiedCount} users from cyberpunk defaults to nord.`);
+  }
+}).catch(err => console.error('Migration error:', err));
 
 module.exports = {
   mongoose,

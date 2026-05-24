@@ -11,7 +11,7 @@ let state = {
   activeView: 'typing',
   currentUser: null,
   settings: {
-    theme: 'serika-dark',
+    theme: 'nord',
     caret: 'line',
     fontSize: '1.25rem',
     font: "'Fira Code', monospace",
@@ -679,7 +679,7 @@ function handleMpEvents(evt, clientName) {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td><span class="rank-badge">${p.rank}</span></td>
-          <td>${p.username}</td>
+          <td><i class="fa-solid fa-user" style="font-size: 0.85em; opacity: 0.75; margin-right: 0.35rem;"></i>${p.username}</td>
           <td>${Math.round(p.wpm)}</td>
           <td>${Math.round(p.accuracy)}%</td>
         `;
@@ -807,7 +807,7 @@ async function loadLeaderboard() {
       
       row.innerHTML = `
         <td><span class="${rankClass}">${index + 1}</span></td>
-        <td><strong>${rank.username}</strong> <span class="text-muted" style="font-size: 0.75rem;">(Lvl ${rank.level})</span></td>
+        <td><strong style="display: inline-flex; align-items: center; gap: 0.35rem;"><i class="fa-solid fa-user" style="font-size: 0.8em; opacity: 0.75;"></i> ${rank.username}</strong> <span class="text-muted" style="font-size: 0.75rem;">(Lvl ${rank.level})</span></td>
         <td class="highlight">${Math.round(rank.wpm)} WPM</td>
         <td>${Math.round(rank.accuracy)}%</td>
         <td>${Math.round(rank.consistency)}%</td>

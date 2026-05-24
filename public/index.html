@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="serika-dark">
+<html lang="en" data-theme="nord">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;700&family=Orbitron:wght@500;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -37,10 +39,15 @@
         </div>
         <div class="auth-panel" id="auth-panel" style="display: none;">
           <div class="user-info">
-            <span class="username" id="display-username">Username</span>
+            <span class="username" title="Profile">
+              <i class="fa-solid fa-user"></i>
+              <span id="display-username" style="display: none;">Username</span>
+            </span>
             <div class="level-tag">Lvl <span id="display-level">1</span></div>
           </div>
-          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -192,7 +199,7 @@
             <p>Enter a 6-character room code to join an existing lobby.</p>
             <div class="input-group">
               <input type="text" id="mp-room-code" placeholder="ROOMID" maxlength="6">
-              <button class="btn btn-accent" id="btn-mp-join">Join Room</button>
+              <button class="btn btn-accent" id="btn-mp-join">Join</button>
             </div>
           </div>
         </div>
@@ -320,7 +327,10 @@
         <!-- Left Side: User profile Summary Card -->
         <div class="profile-card glass">
           <div class="avatar-glow">👑</div>
-          <h2 id="profile-username">Username</h2>
+          <h2 style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+            <i class="fa-solid fa-user" style="font-size: 0.9em; opacity: 0.8;"></i>
+            <span id="profile-username">Username</span>
+          </h2>
           <p class="profile-email" id="profile-email">email@domain.com</p>
           <span class="joined-date" id="profile-joined">Member since: May 2026</span>
 
