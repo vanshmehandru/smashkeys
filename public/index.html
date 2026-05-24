@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="serika-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smash Keys | Futuristic Speed Typing</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;700&family=Orbitron:wght@500;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="logo" id="nav-logo">
+          <span class="logo-icon">⌨</span>
+          <span class="logo-text">smashkeys</span>
+        </div>
+        
+        <nav>
+          <button class="nav-btn active" data-view="typing" id="btn-view-typing">test</button>
+          <button class="nav-btn" data-view="multiplayer" id="btn-view-multiplayer">multiplayer</button>
+          <button class="nav-btn" data-view="leaderboard" id="btn-view-leaderboard">leaderboard</button>
+          <button class="nav-btn" data-view="profile" id="btn-view-profile" style="display: none;">profile</button>
+          <button class="nav-btn" data-view="settings" id="btn-view-settings">settings</button>
+        </nav>
+      </div>
+
+      <div class="user-panel">
+        <div class="guest-panel" id="guest-panel">
+          <button class="btn btn-secondary" id="btn-login-open">Sign In</button>
+        </div>
+        <div class="auth-panel" id="auth-panel" style="display: none;">
+          <div class="user-info">
+            <span class="username" id="display-username">Username</span>
+            <div class="level-tag">Lvl <span id="display-level">1</span></div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="container">
+    
+    <!-- ============================================ -->
+    <!-- TYPING TEST VIEW -->
+    <!-- ============================================ -->
+    <section id="typing-view" class="view-section active">
+      <!-- Test Controls Configuration -->
+      <div class="control-panel glass">
+        <div class="control-group" id="mode-selector">
+          <button class="control-btn active" data-mode="time">time</button>
+          <button class="control-btn" data-mode="words">words</button>
+          <button class="control-btn" data-mode="custom">custom</button>
+          <button class="control-btn" data-mode="code">code</button>
+        </div>
+        <div class="divider"></div>
+        <div class="control-group" id="mode-values">
+          <!-- Populated by JS based on selection -->
+        </div>
+      </div>
+
+      <!-- Typing Arena -->
+      <div class="typing-arena">
+        <!-- Live Counters -->
+        <div class="live-counters">
+          <span class="val" id="live-timer">00</span>
+        </div>
+
+        <input type="text" id="typing-input" class="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus>
+        
+        <!-- Text Board wrapper -->
+        <div class="words-container" id="words-wrapper">
+          <div class="caret" id="typing-caret"></div>
+          <div class="words-content" id="words-box">
+            <!-- Words injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Restart Prompt -->
+        <div class="restart-info">
+          <span>Press <kbd>Esc</kbd> to restart typing test</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- ANALYTICS / POST-TEST VIEW -->
+    <!-- ============================================ -->
+    <section id="stats-view" class="view-section">
+      <div class="stats-header">
+        <h2>Performance Report</h2>
+        <button class="btn btn-primary" id="btn-stats-restart">Try Again</button>
+      </div>
+
+      <!-- Core Metrics Summary -->
+      <div class="stats-grid">
+        <div class="metric-card glass">
+          <span class="label">WPM</span>
+          <span class="value" id="stats-wpm">0.0</span>
+          <span class="subtext">Words Per Minute</span>
+        </div>
+        <div class="metric-card glass">
+          <span class="label">Accuracy</span>
+          <span class="value" id="stats-acc">0%</span>
+          <span class="subtext">Correct Characters</span>
+        </div>
+        <div class="metric-card glass">
+          <span class="label">Raw WPM</span>
+          <span class="value" id="stats-raw">0.0</span>
+          <span class="subtext">Including Errors</span>
+        </div>
+        <div class="metric-card glass">
+          <span class="label">Consistency</span>
+          <span class="value" id="stats-consistency">0%</span>
+          <span class="subtext">Pacing Stability</span>
+        </div>
+      </div>
+
+      <!-- Analytics Plots -->
+      <div class="analytics-layout">
+        <!-- SVG Chart -->
+        <div class="chart-container glass">
+          <h3>Speed & Accuracy History</h3>
+          <div class="svg-chart-wrapper" id="stats-chart-box">
+            <!-- Custom SVG generated chart -->
+          </div>
+        </div>
+
+        <!-- Error Analysis -->
+        <div class="breakdown-container">
+          <div class="weak-keys-card glass">
+            <h3>Weak Key Latency</h3>
+            <ul class="weak-keys-list" id="weak-keys-list">
+              <li>No errors recorded. Keep it up!</li>
+            </ul>
+          </div>
+          
+          <div class="streak-reward-card glass">
+            <h3>XP & Level Updates</h3>
+            <div class="xp-gain-display">
+              <span class="xp-val" id="stats-xp-gained">+0 XP</span>
+              <span class="xp-desc">unlocked from typing stats</span>
+            </div>
+            <div class="level-progress-bar">
+              <div class="fill" id="stats-level-fill" style="width: 0%"></div>
+            </div>
+            <div class="level-labels">
+              <span>Level <span id="stats-current-level">1</span></span>
+              <span class="streak-label" id="stats-streak-display">🔥 0 Day Streak</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keyboard Heatmap Visualizer -->
+      <div class="heatmap-container glass">
+        <h3>Keystroke Heatmap (Error Frequency)</h3>
+        <div class="keyboard-heatmap" id="keyboard-heatmap">
+          <!-- Keyboard layout generated dynamically -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- MULTIPLAYER VIEW -->
+    <!-- ============================================ -->
+    <section id="multiplayer-view" class="view-section">
+      <!-- Landing lobby selections -->
+      <div id="multiplayer-welcome" class="multiplayer-welcome-box glass">
+        <h2>Cyber Typing Arenas</h2>
+        <p>Join or create a typing room to race head-to-head in real time.</p>
+        
+        <div class="multiplayer-actions">
+          <div class="action-card">
+            <h3>Host a Race</h3>
+            <p>Start a private room and invite your friends via code.</p>
+            <button class="btn btn-primary" id="btn-mp-create">Create Room</button>
+          </div>
+          <div class="divider-v">OR</div>
+          <div class="action-card">
+            <h3>Enter Room Code</h3>
+            <p>Enter a 6-character room code to join an existing lobby.</p>
+            <div class="input-group">
+              <input type="text" id="mp-room-code" placeholder="ROOMID" maxlength="6">
+              <button class="btn btn-accent" id="btn-mp-join">Join Room</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multiplayer Active Room Lobby -->
+      <div id="multiplayer-lobby" class="multiplayer-lobby-box glass" style="display: none;">
+        <div class="lobby-header">
+          <div>
+            <h2>Room Code: <span class="room-code-tag" id="lobby-code-display">XXXXXX</span></h2>
+            <p>Waiting for players. Count: <span id="lobby-count">0</span>/6</p>
+          </div>
+          <div class="lobby-actions">
+            <button class="btn btn-primary" id="btn-lobby-start" style="display: none;">Start Race</button>
+            <button class="btn btn-secondary" id="btn-lobby-leave">Leave Room</button>
+          </div>
+        </div>
+
+        <!-- Players Grid -->
+        <div class="players-list-grid" id="lobby-players-grid">
+          <!-- Populated with player profile cards -->
+        </div>
+      </div>
+
+      <!-- Multiplayer Active Arena -->
+      <div id="multiplayer-arena" class="multiplayer-arena-box" style="display: none;">
+        <!-- Sync countdown timer overlay -->
+        <div id="mp-countdown-overlay" class="countdown-overlay" style="display: none;">
+          <span class="countdown-number" id="mp-countdown-number">5</span>
+          <span class="countdown-sub">Get ready to smash keys!</span>
+        </div>
+
+        <!-- Racing tracks -->
+        <div class="racing-tracks glass" id="mp-racing-tracks">
+          <!-- Opponents progress indicators -->
+        </div>
+
+        <!-- Text Board arena -->
+        <div class="typing-arena">
+          <div class="words-container" id="mp-words-wrapper">
+            <div class="caret" id="mp-typing-caret"></div>
+            <div class="words-content" id="mp-words-box">
+              <!-- Shared words here -->
+            </div>
+          </div>
+          <input type="text" id="mp-typing-input" class="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </div>
+      </div>
+
+      <!-- Multiplayer Results podium -->
+      <div id="multiplayer-results" class="multiplayer-results-box glass" style="display: none;">
+        <h2>Race Complete!</h2>
+        <div class="podium-display" id="mp-podium-display">
+          <!-- 1st, 2nd, 3rd, etc. visually styled -->
+        </div>
+        
+        <div class="results-table-wrapper">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Typist</th>
+                <th>Speed (WPM)</th>
+                <th>Accuracy</th>
+              </tr>
+            </thead>
+            <tbody id="mp-results-table-body">
+              <!-- Player rankings rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="results-footer">
+          <button class="btn btn-primary" id="btn-mp-results-return">Return to Multiplayer</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- LEADERBOARD VIEW -->
+    <!-- ============================================ -->
+    <section id="leaderboard-view" class="view-section">
+      <div class="leaderboard-header">
+        <h2>Global Rankings</h2>
+        <!-- Filters -->
+        <div class="leaderboard-filters">
+          <select id="leaderboard-mode-type">
+            <option value="time">Time Test</option>
+            <option value="words">Words Test</option>
+          </select>
+          <select id="leaderboard-mode-val">
+            <option value="30">30 seconds / words</option>
+            <option value="15">15 seconds / words</option>
+            <option value="60">60 seconds / words</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="leaderboard-table-wrapper glass">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th style="width: 10%">Rank</th>
+              <th>Typist</th>
+              <th style="width: 20%">Speed (WPM)</th>
+              <th style="width: 20%">Accuracy</th>
+              <th style="width: 20%">Consistency</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-table-body">
+            <!-- Ranked lists -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- PROFILE VIEW -->
+    <!-- ============================================ -->
+    <section id="profile-view" class="view-section">
+      <div class="profile-layout">
+        
+        <!-- Left Side: User profile Summary Card -->
+        <div class="profile-card glass">
+          <div class="avatar-glow">👑</div>
+          <h2 id="profile-username">Username</h2>
+          <p class="profile-email" id="profile-email">email@domain.com</p>
+          <span class="joined-date" id="profile-joined">Member since: May 2026</span>
+
+          <div class="profile-level-badge">
+            <span class="level-num" id="profile-level-num">1</span>
+            <span class="level-txt">Level</span>
+          </div>
+
+          <div class="profile-xp-progress">
+            <div class="xp-label">
+              <span>XP: <span id="profile-current-xp">150</span> / <span id="profile-needed-xp">200</span></span>
+            </div>
+            <div class="level-progress-bar">
+              <div class="fill" id="profile-xp-fill" style="width: 75%"></div>
+            </div>
+          </div>
+
+          <div class="streak-card">
+            <span class="streak-icon">🔥</span>
+            <span class="streak-count" id="profile-streak-count">5</span>
+            <span class="streak-title">Day Streak</span>
+          </div>
+        </div>
+
+        <!-- Right Side: Statistics & Achievements -->
+        <div class="profile-details-wrapper">
+          <div class="stats-grid summary-grid">
+            <div class="metric-card glass">
+              <span class="label">Top Speed</span>
+              <span class="value" id="profile-top-wpm">0.0</span>
+              <span class="subtext">WPM Personal Best</span>
+            </div>
+            <div class="metric-card glass">
+              <span class="label">Average WPM</span>
+              <span class="value" id="profile-avg-wpm">0.0</span>
+              <span class="subtext">Across All Tests</span>
+            </div>
+            <div class="metric-card glass">
+              <span class="label">Average Accuracy</span>
+              <span class="value" id="profile-avg-acc">0%</span>
+              <span class="subtext">Lifetime Typing</span>
+            </div>
+            <div class="metric-card glass">
+              <span class="label">Tests Finished</span>
+              <span class="value" id="profile-total-tests">0</span>
+              <span class="subtext">Completed Runs</span>
+            </div>
+          </div>
+
+          <!-- Achievements Grid -->
+          <div class="achievements-section glass">
+            <h3>Achievements Unlocked</h3>
+            <div class="achievements-grid" id="profile-achievements-grid">
+              <!-- Achievement badges injected here -->
+            </div>
+          </div>
+
+          <!-- History Table -->
+          <div class="history-section glass">
+            <h3>Recent Typing Sessions</h3>
+            <div class="history-table-wrapper">
+              <table class="leaderboard-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Mode</th>
+                    <th>WPM</th>
+                    <th>Accuracy</th>
+                    <th>Consistency</th>
+                  </tr>
+                </thead>
+                <tbody id="profile-history-body">
+                  <!-- User session rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SETTINGS VIEW -->
+    <!-- ============================================ -->
+    <section id="settings-view" class="view-section">
+      <h2>Customizer Matrix</h2>
+      <p>Configure the physical parameters of the typing interface.</p>
+
+      <div class="settings-grid">
+        
+        <!-- Theme Selection Grid -->
+        <div class="settings-card glass">
+          <h3>Matrix Color Theme</h3>
+          <div class="theme-selector-grid" id="theme-selector-grid">
+            <!-- Themes buttons generated dynamically -->
+          </div>
+        </div>
+
+        <!-- Typography & Text Controls -->
+        <div class="settings-card glass">
+          <h3>Typography Matrix</h3>
+          
+          <div class="form-group">
+            <label for="settings-font">Font family</label>
+            <select id="settings-font">
+              <option value="'Fira Code', monospace">Fira Code</option>
+              <option value="'Space Mono', monospace">Space Mono</option>
+              <option value="'Roboto Mono', monospace">Roboto Mono</option>
+              <option value="'Orbitron', sans-serif">Orbitron</option>
+              <option value="'Inter', sans-serif">Inter</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="settings-font-size">Font Size</label>
+            <select id="settings-font-size">
+              <option value="1rem">Small (16px)</option>
+              <option value="1.25rem">Medium (20px)</option>
+              <option value="1.5rem">Large (24px)</option>
+              <option value="1.8rem">Extra Large (28px)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="settings-caret-style">Caret Style</label>
+            <select id="settings-caret-style">
+              <option value="line">Line (Smooth)</option>
+              <option value="block">Cyber Block</option>
+              <option value="underline">Underline</option>
+              <option value="blink">Standard Blink</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Audio settings disabled -->
+
+        <!-- Layout configuration -->
+        <div class="settings-card glass">
+          <h3>Visual Keyboard Mapping</h3>
+          <div class="form-group">
+            <label for="settings-layout">Keyboard Heatmap Layout</label>
+            <select id="settings-layout">
+              <option value="qwerty">QWERTY Layout</option>
+              <option value="dvorak">Dvorak Layout</option>
+              <option value="colemak">Colemak Layout</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================ -->
+  <!-- AUTHENTICATION DIALOG (MODAL) -->
+  <!-- ============================================ -->
+  <div id="auth-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content glass">
+      <button class="modal-close" id="btn-auth-close">×</button>
+      
+      <!-- Login Form View -->
+      <div id="auth-view-login">
+        <h2>Enter Matrix</h2>
+        <p>Log in to save stats, unlock badges, and level up.</p>
+        <div class="error-banner" id="login-error" style="display: none;">Invalid credentials</div>
+        
+        <form id="form-login">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" required placeholder="name@domain.com">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Authenticate</button>
+        </form>
+        
+        <div class="modal-footer">
+          <span>New typist? <button class="link-btn" id="btn-switch-signup">Create Profile</button></span>
+        </div>
+      </div>
+
+      <!-- Signup Form View -->
+      <div id="auth-view-signup" style="display: none;">
+        <h2>Initialize Profile</h2>
+        <p>Register to climb the leaderboards and track progress.</p>
+        <div class="error-banner" id="signup-error" style="display: none;">Username is already taken</div>
+        
+        <form id="form-signup">
+          <div class="form-group">
+            <label for="signup-username">Username</label>
+            <input type="text" id="signup-username" required placeholder="KeySmash99" maxlength="15">
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email Address</label>
+            <input type="email" id="signup-email" required placeholder="name@domain.com">
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-accent btn-block">Initialize Profile</button>
+        </form>
+        
+        <div class="modal-footer">
+          <span>Already registered? <button class="link-btn" id="btn-switch-login">Sign In</button></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div id="toast-banner" class="toast-banner">Notification text</div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
