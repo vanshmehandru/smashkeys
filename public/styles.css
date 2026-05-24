@@ -640,7 +640,7 @@ nav {
 }
 
 .caret.style-underline {
-  height: 3px;
+  height: 3px !important;
   transform: translateY(1.3rem);
 }
 

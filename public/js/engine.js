@@ -111,11 +111,13 @@ export class TypingEngine {
       this.updateCaretStyle();
     }
     if (settings.fontSize) {
+      document.documentElement.style.setProperty('--font-size', settings.fontSize);
       this.wordsContainer.style.fontSize = settings.fontSize;
       // Recalculate caret position
       setTimeout(() => this.updateCaret(), 50);
     }
     if (settings.font) {
+      document.documentElement.style.setProperty('--font-family', settings.font);
       this.wordsContainer.style.fontFamily = settings.font;
       setTimeout(() => this.updateCaret(), 50);
     }

@@ -390,7 +390,10 @@ function initSettingsUI() {
     layoutSelect.addEventListener('change', (e) => {
       state.settings.layout = e.target.value;
       saveLocalSettings();
+      renderKeyboardHeatmap('settings-keyboard-preview', {}, state.settings.layout);
     });
+    // Initial render for settings preview
+    renderKeyboardHeatmap('settings-keyboard-preview', {}, state.settings.layout);
   }
 }
 
