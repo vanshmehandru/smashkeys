@@ -142,6 +142,11 @@ function initRouter() {
 function navigateTo(viewId) {
   state.activeView = viewId;
 
+  const footer = document.querySelector('.site-footer');
+  if (footer) footer.classList.remove('hidden');
+  const controlPanel = document.querySelector('.control-panel');
+  if (controlPanel) controlPanel.classList.remove('hidden');
+
   // Toggle nav buttons
   document.querySelectorAll('.nav-btn').forEach(btn => {
     if (btn.getAttribute('data-view') === viewId) {
@@ -261,7 +266,7 @@ function initAuthEvents() {
 
     document.getElementById('guest-panel').style.display = 'block';
     document.getElementById('auth-panel').style.display = 'none';
-    document.getElementById('btn-view-profile').style.display = 'none';
+
     
     showToast('Logged out of system.');
     navigateTo('typing');
@@ -290,8 +295,11 @@ function handleUserLoggedIn(user) {
   document.getElementById('display-username').textContent = user.username;
   document.getElementById('display-level').textContent = user.level;
 
-  // Make profile visible
-  document.getElementById('btn-view-profile').style.display = 'block';
+  // Profile icon click
+  const profileIcon = document.getElementById('btn-profile-icon');
+  if (profileIcon) {
+    profileIcon.addEventListener('click', () => navigateTo('profile'));
+  }
 }
 
 // ----------------------------------------------------

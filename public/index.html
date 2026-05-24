@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smash Keys | Futuristic Speed Typing</title>
+  <title>Smash Keys | Type racer and speed check</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,11 +24,15 @@
           <span class="logo-text">smashkeys</span>
         </div>
         
-        <nav>
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <nav id="main-nav">
           <button class="nav-btn active" data-view="typing" id="btn-view-typing">test</button>
           <button class="nav-btn" data-view="multiplayer" id="btn-view-multiplayer">multiplayer</button>
           <button class="nav-btn" data-view="leaderboard" id="btn-view-leaderboard">leaderboard</button>
-          <button class="nav-btn" data-view="profile" id="btn-view-profile" style="display: none;">profile</button>
+
           <button class="nav-btn" data-view="settings" id="btn-view-settings">settings</button>
         </nav>
       </div>
@@ -39,7 +43,7 @@
         </div>
         <div class="auth-panel" id="auth-panel" style="display: none;">
           <div class="user-info">
-            <span class="username" title="Profile">
+            <span class="username" title="Profile" id="btn-profile-icon" style="cursor: pointer;">
               <i class="fa-solid fa-user"></i>
               <span id="display-username" style="display: none;">Username</span>
             </span>
@@ -569,5 +573,27 @@
 
   <!-- Scripts -->
   <script type="module" src="js/app.js"></script>
+  <script>
+    // Hamburger menu toggle
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mainNav = document.getElementById('main-nav');
+    if (hamburgerBtn && mainNav) {
+      hamburgerBtn.addEventListener('click', () => {
+        mainNav.classList.toggle('open');
+        const icon = hamburgerBtn.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-xmark');
+      });
+      // Close nav when a nav-btn is clicked (mobile)
+      mainNav.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          mainNav.classList.remove('open');
+          const icon = hamburgerBtn.querySelector('i');
+          icon.classList.add('fa-bars');
+          icon.classList.remove('fa-xmark');
+        });
+      });
+    }
+  </script>
 </body>
 </html>

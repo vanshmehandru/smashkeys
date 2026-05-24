@@ -495,6 +495,13 @@ nav {
   padding: 0.5rem 1rem;
   align-self: center;
   gap: 1rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.control-panel.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
 }
 
 .control-group {
@@ -1587,22 +1594,27 @@ nav {
 .toast-banner {
   position: fixed;
   bottom: 2rem;
-  right: -300px;
+  right: 2rem;
+  max-width: 400px;
   background: var(--surface-color);
   backdrop-filter: blur(10px);
   border: 1px solid var(--accent-color);
-  box-shadow: 0 0 15px var(--accent-glow);
   color: var(--text-main);
   padding: 0.8rem 1.5rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 500;
   z-index: 1000;
-  transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: translateX(calc(100% + 3rem));
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .toast-banner.show {
-  right: 2rem;
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Footer Styles */
@@ -1615,6 +1627,13 @@ nav {
   align-items: center;
   font-size: 0.8rem;
   color: var(--text-muted);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.site-footer.hidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
 }
 
 .footer-left, .footer-right {
@@ -1641,4 +1660,517 @@ nav {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+/* ==========================================================================
+   HAMBURGER BUTTON (hidden on desktop)
+   ========================================================================== */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.15s ease;
+}
+
+.hamburger-btn:hover {
+  color: var(--accent-color);
+}
+
+/* ==========================================================================
+   RESPONSIVE – TABLET (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+
+  /* --- Hamburger visible --- */
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  /* --- Nav becomes a dropdown --- */
+  .nav-left {
+    position: relative;
+  }
+
+  nav#main-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    flex-direction: column;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem;
+    min-width: 160px;
+    z-index: 200;
+    gap: 0.2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  nav#main-nav.open {
+    display: flex;
+  }
+
+  .nav-btn {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  }
+
+  /* --- Header padding --- */
+  header {
+    padding: 1rem 0;
+  }
+
+  .nav-container {
+    width: 95%;
+  }
+
+  .nav-left {
+    gap: 1rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .logo .logo-icon {
+    font-size: 1.3rem;
+  }
+
+  /* --- Container width --- */
+  .container {
+    width: 95%;
+  }
+
+  /* --- Control panel wrap --- */
+  .control-panel {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .control-btn {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  /* --- Live counters --- */
+  .live-counters .val {
+    font-size: 1.8rem;
+  }
+
+  /* --- Words container --- */
+  .words-container {
+    font-size: 1.1rem;
+    line-height: 2.2rem;
+    min-height: 100px;
+    max-height: 160px;
+  }
+
+  /* --- Stats grid --- */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .metric-card .value {
+    font-size: 2.2rem;
+  }
+
+  /* --- Analytics layout stacks --- */
+  .analytics-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .svg-chart-wrapper {
+    min-height: 180px;
+  }
+
+  /* --- Keyboard heatmap --- */
+  .key {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
+  }
+
+  .key.space-key {
+    width: 180px;
+  }
+
+  /* --- Multiplayer --- */
+  .multiplayer-actions {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .divider-v {
+    display: none;
+  }
+
+  .multiplayer-welcome-box {
+    padding: 2rem 1.5rem;
+  }
+
+  .players-list-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* --- Podium --- */
+  .podium-display {
+    max-width: 100%;
+  }
+
+  .podium-stand {
+    width: 90px;
+    padding: 1rem 0.5rem;
+  }
+
+  /* --- Leaderboard --- */
+  .leaderboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .leaderboard-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaderboard-table th, .leaderboard-table td {
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  /* --- Profile layout stacks --- */
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+  }
+
+  .avatar-glow {
+    width: 70px;
+    height: 70px;
+    font-size: 3rem;
+  }
+
+  .profile-level-badge .level-num {
+    font-size: 2.5rem;
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  /* --- Settings --- */
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* --- Footer --- */
+  .site-footer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    width: 95%;
+  }
+
+  .footer-left, .footer-right {
+    justify-content: center;
+  }
+
+  /* --- Toast --- */
+  .toast-banner {
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+
+  /* --- Modal --- */
+  .modal-content {
+    width: 95%;
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE – PHONE (max-width: 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+
+  /* --- Header --- */
+  header {
+    padding: 0.8rem 0;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .logo .logo-icon {
+    font-size: 1.1rem;
+  }
+
+  .btn.btn-secondary {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+  }
+
+  /* --- Control panel --- */
+  .control-panel {
+    gap: 0.3rem;
+    padding: 0.4rem;
+  }
+
+  .control-btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  /* --- Typing area --- */
+  .typing-arena {
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+
+  .live-counters .val {
+    font-size: 1.5rem;
+  }
+
+  .words-container {
+    font-size: 1rem;
+    line-height: 2rem;
+    min-height: 80px;
+    max-height: 140px;
+    padding: 0.5rem 0;
+  }
+
+  .restart-info {
+    font-size: 0.75rem;
+  }
+
+  /* --- Stats --- */
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .metric-card {
+    padding: 1rem;
+  }
+
+  .metric-card .value {
+    font-size: 1.8rem;
+  }
+
+  .metric-card .label {
+    font-size: 0.7rem;
+  }
+
+  /* --- Keyboard heatmap smaller --- */
+  .key {
+    width: 26px;
+    height: 26px;
+    font-size: 0.6rem;
+    border-radius: 4px;
+  }
+
+  .key.space-key {
+    width: 120px;
+  }
+
+  .keyboard-row {
+    gap: 0.2rem;
+  }
+
+  .keyboard-heatmap {
+    gap: 0.2rem;
+  }
+
+  /* --- Multiplayer --- */
+  .multiplayer-welcome-box {
+    padding: 1.5rem 1rem;
+  }
+
+  .multiplayer-welcome-box h2 {
+    font-size: 1.2rem;
+  }
+
+  .players-list-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-card {
+    padding: 1rem;
+  }
+
+  .lobby-header {
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .lobby-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .lobby-actions .btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* --- Countdown --- */
+  .countdown-number {
+    font-size: 5rem;
+  }
+
+  /* --- Podium --- */
+  .podium-display {
+    height: 150px;
+    gap: 0.5rem;
+  }
+
+  .podium-stand {
+    width: 70px;
+    padding: 0.8rem 0.3rem;
+  }
+
+  .podium-stand .avatar {
+    font-size: 1.8rem;
+    top: -35px;
+  }
+
+  .podium-stand .name {
+    font-size: 0.75rem;
+    max-width: 60px;
+  }
+
+  .podium-stand .rank-num {
+    font-size: 1.8rem;
+  }
+
+  .podium-stand.first { height: 130px; }
+  .podium-stand.second { height: 100px; }
+  .podium-stand.third { height: 75px; }
+
+  /* --- Profile --- */
+  .profile-card {
+    padding: 1.2rem;
+  }
+
+  .avatar-glow {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+
+  .profile-level-badge .level-num {
+    font-size: 2rem;
+  }
+
+  .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievement-badge {
+    padding: 0.8rem;
+  }
+
+  .history-section {
+    padding: 1rem;
+  }
+
+  .history-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* --- Settings --- */
+  .settings-card {
+    padding: 1rem;
+  }
+
+  .theme-selector-grid {
+    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+    gap: 0.4rem;
+  }
+
+  .theme-opt-btn {
+    padding: 0.4rem 0.3rem;
+  }
+
+  .theme-opt-btn .theme-title {
+    font-size: 0.65rem;
+  }
+
+  /* --- XP Display --- */
+  .xp-gain-display .xp-val {
+    font-size: 1.5rem;
+  }
+
+  /* --- Leaderboard --- */
+  .leaderboard-filters {
+    flex-wrap: wrap;
+  }
+
+  .leaderboard-filters select {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* --- Footer --- */
+  .site-footer {
+    font-size: 0.7rem;
+    gap: 0.8rem;
+    margin: 1.5rem auto 0.8rem auto;
+  }
+
+  .footer-left, .footer-right {
+    gap: 0.8rem;
+  }
+
+  /* --- Toast --- */
+  .toast-banner {
+    bottom: 1rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+  }
+
+  /* --- Modal --- */
+  .modal-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
 }

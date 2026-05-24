@@ -162,6 +162,11 @@ export class TypingEngine {
     this.timerInterval = null;
     this.isRunning = false;
     this.isFinished = false;
+
+    const footer = document.querySelector('.site-footer');
+    if (footer) footer.classList.remove('hidden');
+    const controlPanel = document.querySelector('.control-panel');
+    if (controlPanel) controlPanel.classList.remove('hidden');
     
     this.currentWordIdx = 0;
     this.currentCharIdx = 0;
@@ -449,6 +454,11 @@ export class TypingEngine {
   startTimer() {
     this.isRunning = true;
     this.startTime = Date.now();
+
+    const footer = document.querySelector('.site-footer');
+    if (footer) footer.classList.add('hidden');
+    const controlPanel = document.querySelector('.control-panel');
+    if (controlPanel) controlPanel.classList.add('hidden');
     
     this.timerInterval = setInterval(() => {
       this.timeElapsed++;
@@ -574,6 +584,11 @@ export class TypingEngine {
     this.isFinished = true;
     this.isRunning = false;
     this.input.blur();
+
+    const footer = document.querySelector('.site-footer');
+    if (footer) footer.classList.remove('hidden');
+    const controlPanel = document.querySelector('.control-panel');
+    if (controlPanel) controlPanel.classList.remove('hidden');
 
     const actualDuration = this.startTime ? (Date.now() - this.startTime) / 1000 : 1;
     const duration = Math.max(actualDuration, 0.1);
